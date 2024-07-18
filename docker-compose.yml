@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/node.Dockerfile
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    # ports:
+    #   - "3000:3000"
+    command: npm run start:dev
+    environment:
+      - NODE_ENV=development
+    networks:
+      - webnet
+
+  nginx:
+    depends_on:
+      - app
+    build:
+      context: .
+      dockerfile: ./docker/nginx.Dockerfile
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "8081:80" 
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
